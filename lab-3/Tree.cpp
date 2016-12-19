@@ -126,6 +126,7 @@ void Tree::BFS() {
         if (v->left) Q.put(v->left); // QUEUE <- (левый сын)
         if (v->right) Q.put(v->right); // QUEUE <- (правый сын)
     }
+
     cout << "\nЛистьев: " << count << "\n";
 }
 
