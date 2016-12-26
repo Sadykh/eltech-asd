@@ -1,14 +1,40 @@
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+#ifndef CW_GRAPH_H
+#define CW_GRAPH_H
+
+using namespace std;
+
 class Graph {
 private:
-    int **matrix;
-    int count_of_nodes;
-    int selected_node;
-    int maxCount_of_nodes;
+    bool **matrix;
+    int s;
+    bool cyclic;
+    int *colors;
+    int *from;
+    int cycleS;
+    int cycleE;
 public:
-    Graph(int);
+    Graph();
+
+    Graph(int s);
+
+    Graph(int s, string data);
+
+    void Show();
+
+    void showCycle();
+
+    void dfs(int v);
+
+    bool isAcyclic();
 
     ~Graph();
+};
 
-    void printGraph();
 
-    void Graph::checkGraph(int v);
+#endif //CW_GRAPH_H

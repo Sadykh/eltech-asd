@@ -1,63 +1,92 @@
 #include "Graph.h"
-#include <iostream>
-#include "windows.h"
-#include <vector>
 
-Graph::Graph(int maxCount) {
-    maxCount_of_nodes = maxCount;
-    count_of_nodes = rand() % (maxCount - 5) + 6;
-    matrix = new int *[count_of_nodes];
-    for (int i = 0; i < count_of_nodes; i++)
-        matrix[i] = new int[count_of_nodes];
-    for (int i = 0; i < count_of_nodes; i++)
-        for (int j = 0; j < count_of_nodes; j++)
-            matrix[i][j] = rand() % 2;
+Graph::Graph() {
+    srand((unsigned int) time(NULL));
+    s = rand() % 10;
+    string data((unsigned int) (s * s), '0');
+    for (int i = 0; i < s * s; i++)
+        if (rand() % s == 1) data[i] = '1';
+    matrix = new bool *[s];
+    for (int i = 0; i < s; i++)
+        matrix[i] = new bool[s]();
+    for (int i = 0; i < s; i++)
+        for (int j = 0; j < s; j++) {
+            matrix[i][j] = data[i * s + j] - '0';
+        }
 }
 
-
-Graph::~Graph() {
-    for (int i = 0; i < count_of_nodes; i++)
-        delete[] matrix[i];
-    delete[] matrix;
-    matrix = nullptr;
+Graph::Graph(int s) {
+    this->s = s;
+    matrix = new bool *[s];
+    for (int i = 0; i < s; i++)
+        matrix[i] = new bool[s]();
 }
 
-void Graph::printGraph() {
-    std::cout << "\t";
-    for (int i = 0; i < count_of_nodes; i++)
-        std::cout << i << "|";
-    std::cout << "\n\n";
-    for (int i = 0; i < count_of_nodes; i++) {
-        std::cout << i << "\t";
-        for (int j = 0; j < count_of_nodes; j++)
-            if (j < 10)
-                std::cout << matrix[i][j] << "|";
-            else
-                std::cout << matrix[i][j] << " |";
+Graph::Graph(int s, string data) : Graph(s) {
+    for (int i = 0; i < s; i++)
+        for (int j = 0; j < s; j++) {
+            matrix[i][j] = data[i * s + j] - '0';
+        }
+}
 
-        std::cout << "\n";
+void Graph::Show() {
+    cout << "Количество вершин в графе: " << s << endl;
+    for (int i = 0; i < s; i++) {
+        cout << i + 1 << "\t";
+        for (int j = 0; j < s; j++)
+            cout << "[" << matrix[i][j] << "]";
+        cout << endl;
     }
 }
 
-void Graph::checkGraph(int v) {
-    int n;
-    vector <vector<int>> g;
-    vector<char> cl;
-    vector<int> p;
-    int cycle_st, cycle_end;
-
-    cl[v] = 1;
-    for (size_t i = 0; i < g[v].size(); ++i) {
-        int to = g[v][i];
-        if (cl[to] == 0) {
-            p[to] = v;
-            if (Graph::checkGraph(to)) return true;
-        } else if (cl[to] == 1) {
-            cycle_end = v;
-            cycle_st = to;
-            return true;
+void Graph::dfs(int v) {
+    if (colors[v] == 2)
+        return;
+    if (cyclic)
+        return;
+    if (colors[v] == 1) {
+        cyclic = true;
+        return;
+    }
+    colors[v] = 1;
+    for (int i = 0; i < s; i++) {
+        if (matrix[v][i] == 1) {
+            from[i] = v;
+            if (colors[i] == 1) {
+                cycleS = i;
+                cycleE = v;
+            }
+            dfs(i);
         }
     }
-    cl[v] = 2;
-    return false;
+    colors[v] = 2;
+    return;
+}
+
+bool Graph::isAcyclic() {
+    cyclic = false;
+    colors = new int[s];
+    from = new int[s]();
+    dfs(0);
+    return !cyclic;
+}
+
+Graph::~Graph() {
+    for (int i = 0; i < s; i++)
+        delete[] matrix[i];
+    delete[] matrix;
+    delete[] from;
+    delete[] colors;
+}
+
+void Graph::showCycle() {
+    vector<int> cycle;
+    cycle.push_back(cycleS);
+    for (int v = cycleE; v != cycleS; v = from[v])
+        cycle.push_back(v);
+    cout << cycleS + 1;
+    for (int i = cycle.size() - 1; i >= 0; i--)
+        cout << " -> " << cycle[i] + 1;
+
+    cout << " \n";
 }
