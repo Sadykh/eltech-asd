@@ -67,7 +67,8 @@ bool Graph::isAcyclic() {
     cyclic = false;
     colors = new int[s];
     from = new int[s]();
-    dfs(0);
+    for(int i = 0; i < s; i++)
+        dfs(i);
     return !cyclic;
 }
 
